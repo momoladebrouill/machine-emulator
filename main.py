@@ -1,3 +1,4 @@
+from typing import Literal
 import pygame as pg
 pg.init()
 fps=pg.time.Clock()
@@ -8,9 +9,11 @@ font=pg.font.SysFont('consolas',25)
 class wind:
     h=500
     l=500
+
 class dep:
     x=0
     y=0
+
 class Button:
     name='Bouton'
     def __repr__(self):
@@ -25,8 +28,6 @@ class Button:
         if self.IsOn:
             pg.draw.circle(f,0x00aa00,(dep.x+self.pos[0],dep.y+self.pos[1]),10)
         self.rect=pg.draw.circle(f,0xffffff,(dep.x+self.pos[0],dep.y+self.pos[1]),10,1)
-  
-
         
 class Cable:
     name='Cable'
@@ -46,8 +47,7 @@ class Cable:
         pg.draw.line(f,c,(dep.x+self.pos1.pos[0],dep.y+self.pos1.pos[1]),(dep.x+self.pos2.pos[0],dep.y+self.pos2.pos[1]),2)
     def __repr__(self):
       return 'Cable '+str(self.pos1)+' '+str(self.pos2)
-
-        
+   
 class Digit:
     name='Digit'
     def __init__(self,pos,nb=3):
@@ -57,6 +57,8 @@ class Digit:
         for i in self.entrys:
             i.pored=self
             objs[i]=i.rect
+    def __repr__(self) -> str:
+        return f"D {self.val},{self.pos}"
     def draw(self):
         num=font.render(str(self.val),1,(255,255,255))
         f.blit(num,(dep.x+self.pos[0],dep.y+self.pos[1]))
@@ -111,8 +113,7 @@ class Port:
         for but in self.buts:
           objs.pop(but)
         objs.pop(self)
-
-        
+ 
 class Not:
     name='NOT'
     def __init__(self,pos):
@@ -144,9 +145,7 @@ class Not:
         objs.pop(self.exit)
         objs.pop(self)
 
-        
 créable=[Button,Cable,Port,Not,Digit]
-
 
 def findobj(pos):
     for obj in objs:
@@ -162,8 +161,10 @@ selection=0
 handling=None
 objs={}
 depy,depx=0,0
+obs=Literal['']
 carto=lambda val:round(val/50)*50
 while B:
+    B+=1
     pg.display.flip()
     f.fill(0)
     fps.tick(60)
@@ -189,7 +190,12 @@ while B:
         handling.draw()
     mous=pg.mouse.get_pos()
     mouse=(carto(mous[0]),carto(mous[1]))
+    obs=findobj(mouse)
+    if handling:
+        handling.pos=(mouse[0]-depx,mouse[1]-depy)
+        handling.draw()
     pg.draw.circle(f,0xff00000,mouse,5)
+    f.blit(font.render(str(obs),True,(255,0,0)),mouse)
     for event in pg.event.get():
         if event.type==pg.KEYUP:
             key=event.key
@@ -201,6 +207,10 @@ while B:
                 depx+=50
             elif key==pg.K_RIGHT:
                 depx-=50
+            elif key==pg.K_q:
+                pg.quit()
+                B=0
+
             else:
                 selection+=1
                 selection=selection%len(créable)
@@ -225,16 +235,20 @@ while B:
         elif event.type==pg.MOUSEBUTTONUP:
             obs=findobj(mouse)
             if event.button==1:
-                if mode==Button:
+                if mode==Button and type(obs)==Button:
                     if obs:
                         obs.IsOn=not obs.IsOn
                     if handling:
                         objs[handling]=handling.rect
                 
-                if mode==Cable:
+                elif mode==Cable:
                     if type(obs)==Button:
                         fils.append(Cable(pos1,obs))
                     pos1=0
+                elif type(obs)==Digit:
+                    obs.val+=1
+                    obs.val=obs.val%8
+
                 else:
                     if handling:
                         objs[handling]=handling.rect
