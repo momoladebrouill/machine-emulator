@@ -63,7 +63,7 @@ class Digit:
         num=font.render(str(self.val),1,(255,255,255))
         f.blit(num,(dep.x+self.pos[0],dep.y+self.pos[1]))
         self.rect=num.get_rect()
-        self.rect.x,self.rect.y=self.pos
+        self.rect.x,self.rect.y=(self.pos[0]+depx,self.pos[1]+depy)
         place=0
         for i in format(self.val,'0'+str(len(self.entrys))+'b')[::-1]:
             self.entrys[place].IsOn=(i =='1')
@@ -74,7 +74,7 @@ class Digit:
           objs.pop(but)
         objs.pop(self)
         
-class Port:
+class Port: 
     name='Port'
     def __init__(self,pos):
         '''entry1,entry2,exit'''
@@ -103,7 +103,7 @@ class Port:
           but.draw()
         
         self.rect=desrect
-        self.rect.x,self.rect.y=(self.pos[0]-desrect.width/2,self.pos[1]-desrect.height/2)
+        self.rect.x,self.rect.y=(self.pos[0]-desrect.width/2+depx,self.pos[1]-desrect.height/2+depy)
     def positionstudent(self):
         self.buts[0].pos=(self.pos[0]-50,self.pos[1]-50)
         self.buts[1].pos=(self.pos[0]-50,self.pos[1]+50)
@@ -123,8 +123,11 @@ class Not:
         self.positionstudent()
         self.entry.pored=self
         self.exit.pored=self
+        self.rect=pg.Rect(0,0,0,0)
         objs[self.entry]=self.entry.rect
         objs[self.exit]=self.exit.rect
+    def __repr__(self) -> str:
+        return f"N {self.pos}"
     def draw(self):
         des=font.render('NOT',1,(255,0,255))
         desrect=des.get_rect()
@@ -152,6 +155,7 @@ def findobj(pos):
         if objs[obj].collidepoint(pos):
             return obj
     return ''
+
 
 B=1
 pushing=0
@@ -219,12 +223,11 @@ while B:
             pushing=event.button
             if pushing==1:
                 if mode==Cable:
-                    but=findobj(mouse)
-                    if type(but)==Button:
-                        pos1=but #raacccrocher le début du cable
+                    obs=findobj(mouse)
+                    if type(obs)==Button:
+                        pos1=obs #raacccrocher le début du cable
                         print(pos1)
                 else:
-                    obs=findobj(mouse)
                     if obs=='':
                         handling=mode(mouse) # créer un nouvel objet
                     else:
@@ -233,25 +236,25 @@ while B:
             
             
         elif event.type==pg.MOUSEBUTTONUP:
-            obs=findobj(mouse)
             if event.button==1:
-                if mode==Button and type(obs)==Button:
+                if mode==Button :
                     if obs:
                         obs.IsOn=not obs.IsOn
                     if handling:
                         objs[handling]=handling.rect
-                
+
                 elif mode==Cable:
                     if type(obs)==Button:
                         fils.append(Cable(pos1,obs))
                     pos1=0
-                elif type(obs)==Digit:
-                    obs.val+=1
-                    obs.val=obs.val%8
+                
 
                 else:
                     if handling:
                         objs[handling]=handling.rect
+                    if type(obs)==Digit:
+                        obs.val+=1
+                        obs.val=obs.val%8
                     elif type(obs)==Button:
                         obs.IsOn=not obs.IsOn
             elif event.button==3 and obs:
