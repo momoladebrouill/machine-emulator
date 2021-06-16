@@ -45,8 +45,12 @@ class Cable:
         else:
             c=0xffffff
         pg.draw.line(f,c,(dep.x+self.pos1.pos[0],dep.y+self.pos1.pos[1]),(dep.x+self.pos2.pos[0],dep.y+self.pos2.pos[1]),2)
-    def __repr__(self):
+    def __repr__(self)-> str:
       return 'Cable '+str(self.pos1)+' '+str(self.pos2)
+    def destroy(self):
+        fils.remove(self)
+        self.pos1.filed.remove(self)
+        self.pos2.filed.remove(self)
    
 class Digit:
     name='Digit'
@@ -226,7 +230,6 @@ while B:
                     obs=findobj(mouse)
                     if type(obs)==Button:
                         pos1=obs #raacccrocher le début du cable
-                        print(pos1)
                 else:
                     if obs=='':
                         handling=mode(mouse) # créer un nouvel objet
@@ -261,8 +264,8 @@ while B:
                 if type(obs)==Button:
                     if obs.filed:
                         for i in obs.filed:
-                            fils.remove(i)
-                    if obs.pored:
+                            i.destroy()
+                    elif obs.pored:
                         obs.pored.destroy()
                     else:
                         objs.pop(obs)
@@ -275,7 +278,6 @@ while B:
                     obs.val+=1
                     obs.val=obs.val%(2**3)
                 else:
-                    print(obs)
                     obs.destroy()
             handling=0
 
