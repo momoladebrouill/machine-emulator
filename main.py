@@ -1,4 +1,4 @@
-from typing import Literal
+
 import pygame as pg
 pg.init()
 fps=pg.time.Clock()
@@ -169,7 +169,7 @@ selection=0
 handling=None
 objs={}
 depy,depx=0,0
-obs=Literal['']
+obs=''
 carto=lambda val:round(val/50)*50
 while B:
     B+=1
