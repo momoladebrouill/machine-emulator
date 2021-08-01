@@ -202,7 +202,7 @@ while B:
     if handling:
         handling.pos=(mouse[0]-depx,mouse[1]-depy)
         handling.draw()
-    pg.draw.circle(f,0xff00000,mouse,5)
+    #pg.draw.circle(f,0xff00000,mouse,5)
     f.blit(font.render(str(obs),True,(255,0,0)),mouse)
     for event in pg.event.get():
         if event.type==pg.KEYUP:
