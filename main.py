@@ -1,4 +1,5 @@
 import pygame as pg
+from sys import exit
 pg.init()
 fps=pg.time.Clock()
 f=pg.display.set_mode((500,500),pg.RESIZABLE)
@@ -58,7 +59,7 @@ class Digit:
     def __init__(self,pos,nb=3):
         self.pos=(carto(pos[0]),carto(pos[1]))
         self.val=0
-        self.entrys=[Button((pos[0],pos[1]+i*50)) for i in range(1,nb+1)]
+        self.entrys=[Button((pos[0],pos[1]+i*50)) for i in range(3)]
         for i in self.entrys:
             i.pored=self
             objs[i]=i.rect
@@ -168,7 +169,7 @@ fils=[]
 selection=0
 handling=None
 objs={}
-dep.rly,dep.rlx=250,250
+dep.rly,dep.rlx=0,0
 obs=''
 mouse=(0,0)
 
@@ -291,6 +292,7 @@ while B:
         elif event.type==pg.QUIT:
             B=0
             pg.quit()
+            exit()
     fps.tick(60)
         
 
